@@ -7,31 +7,29 @@ CONFIG = {
 
 # COLMAP options for Structure from Motion and Multi-View Stereo
 COLMAP_OPTIONS = {
+    # Options for SIFT feature extraction
     'feature_extraction': {
-        'SiftExtraction.num_octaves': 4,
-        'SiftExtraction.octave_resolution': 3,
-        'SiftExtraction.peak_threshold': 0.02 / 3,
-        'SiftExtraction.edge_threshold': 10,
-        'SiftExtraction.max_num_features': 8192,
+        'num_octaves': 4,
+        'octave_resolution': 3,
+        'peak_threshold': 0.02 / 3,
+        'edge_threshold': 10,
+        'max_num_features': 8192,
     },
+    # Options for SIFT feature matching
     'feature_matching': {
-        'SiftMatching.num_samples': 20,
-        'SiftMatching.min_ratio': 0.7,
-        'SiftMatching.min_distance': 30,
-        'SiftMatching.cross_check': True,
+        'max_ratio': 0.7,
+        'max_distance': 30,
+        'cross_check': True,
     },
-    'mapper': {
-        'Mapper.min_num_matches': 15,
-        'Mapper.ignore_watermarks': False,
-        'Mapper.multiple_models': False,
-        'Mapper.min_model_size': 10,
-    },
+    # Incremental mapper options (left empty to use defaults)
+    'mapper': {},
+    # Options for dense reconstruction via PatchMatch
     'mvs': {
-        'PatchMatchStereo.window_radius': 5,
-        'PatchMatchStereo.window_step': 1,
-        'PatchMatchStereo.num_samples': 15,
-        'PatchMatchStereo.geom_consistency': True,
-        'PatchMatchStereo.max_image_size': 2000,
+        'window_radius': 5,
+        'window_step': 1,
+        'num_samples': 15,
+        'geom_consistency': True,
+        'max_image_size': 2000,
     }
 }
 
