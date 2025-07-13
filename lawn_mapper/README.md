@@ -11,7 +11,6 @@ Lawn Mapper processes a series of video frames taken while walking over your law
 ### Prerequisites
 
 - Python 3.8 or higher
-- `ffmpeg` (for frame extraction from video, assumed to be installed)
 
 ### Setup
 
@@ -31,26 +30,23 @@ Lawn Mapper processes a series of video frames taken while walking over your law
 
 ### Preparing Input
 
-Extract frames from your video using `ffmpeg` or another tool. For example, to extract every 10th frame:
-
-```bash
-ffmpeg -i input_video.mp4 -vf "select='not(mod(n,10))'" -vsync vfr frames/frame_%04d.png
-```
-
-Place the extracted frames in a directory, e.g., `frames/`.
+You can either provide a directory of pre-extracted frames **or** supply a direct URL to a video file and let the program handle extraction for you. When using a video URL, frames will be saved to the specified `input_dir`.
 
 ### Running the Pipeline
 
-Run the Lawn Mapper pipeline with the following command:
+Run the Lawn Mapper pipeline with the following command. Replace `VIDEO_URL` with the direct link to your video file (omit `--video-url` if you already have a directory of frames):
 
 ```bash
 cd lawn_mapper
-python main.py ../frames --output-dir ../ --workspace-dir ../workspace --pixels-per-meter 100 --verbose
+python main.py ../frames --video-url VIDEO_URL --frame-step 10 \
+    --output-dir ../ --workspace-dir ../workspace --pixels-per-meter 100 --verbose
 ```
 
 #### Arguments
 
 - `input_dir`: Directory containing the video frames (required).
+- `--video-url`: URL of the video to download and extract frames from (optional).
+- `--frame-step`: Extract every n-th frame from the video when using `--video-url` (default: `10`).
 - `--output-dir`: Directory to save the output map (default: `output`).
 - `--workspace-dir`: Directory for temporary workspace files (default: `workspace`).
 - `--pixels-per-meter`: Resolution of the output map in pixels per meter (default: 100.0).
