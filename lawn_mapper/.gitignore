@@ -1,11 +1,6 @@
-# Custom Entries
-lawn_mapper/__pycache__
-frames/
-workspace/
-
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
+lawn_mapper/__pycache__
 *.py[codz]
 *$py.class
 
