@@ -32,6 +32,9 @@ Lawn Mapper processes a series of video frames taken while walking over your law
 
 You can either provide a directory of pre-extracted frames **or** supply a direct URL to a video file and let the program handle extraction for you. When using a video URL, frames will be saved to the specified `input_dir`.
 
+Here's a video of the creator's back yard that can be used to the test this program:
+https://store3.gofile.io/download/direct/06814668-3427-41bd-a1ff-93b9bd906f36/photogrammetry_grass_backyard.MOV
+
 ### Running the Pipeline
 
 Run the Lawn Mapper pipeline with the following command. Replace `VIDEO_URL` with the direct link to your video file (omit `--video-url` if you already have a directory of frames):
