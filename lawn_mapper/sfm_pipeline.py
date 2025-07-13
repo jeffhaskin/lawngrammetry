@@ -6,6 +6,17 @@ from pycolmap import logging as colmap_logging
 
 from utils import ensure_dir
 
+
+def _dict_to_options(data: dict, options_cls, prefix: str = ""):
+    """Convert a dictionary of option values to a pycolmap options object."""
+    opts = options_cls()
+    for key, value in data.items():
+        if prefix and key.startswith(prefix):
+            key = key[len(prefix):]
+        if hasattr(opts, key):
+            setattr(opts, key, value)
+    return opts
+
 def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dict):
     """Run Structure from Motion and Multi-View Stereo using pycolmap."""
     logger = logging.getLogger(__name__)
@@ -25,6 +36,24 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
     logger.info(f"Sparse reconstruction directory: {sparse_dir}")
     logger.info(f"Dense reconstruction directory: {dense_dir}")
 
+    # Prepare option objects
+    feat_opts = _dict_to_options(
+        options.get('feature_extraction', {}),
+        pycolmap.SiftExtractionOptions,
+    )
+    match_opts = _dict_to_options(
+        options.get('feature_matching', {}),
+        pycolmap.SiftMatchingOptions,
+    )
+    mapper_opts = _dict_to_options(
+        options.get('mapper', {}),
+        pycolmap.IncrementalMapperOptions,
+    )
+    mvs_opts = _dict_to_options(
+        options.get('mvs', {}),
+        pycolmap.PatchMatchOptions,
+    )
+
     # Step 1: Feature Extraction
     logger.info("Extracting features from images...")
     pycolmap.extract_features(
@@ -32,7 +61,7 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
         image_path=image_dir,
         camera_mode=pycolmap.CameraMode.AUTO,
         camera_model="OPENCV",
-        sift_options=options['feature_extraction']
+        sift_options=feat_opts,
     )
     logger.info("Feature extraction completed.")
 
@@ -40,7 +69,7 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
     logger.info("Matching features between images...")
     pycolmap.match_features(
         database_path=database_path,
-        sift_matching_options=options['feature_matching']
+        sift_matching_options=match_opts,
     )
     logger.info("Feature matching completed.")
 
@@ -50,7 +79,7 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
         database_path=database_path,
         image_path=image_dir,
         output_path=sparse_dir,
-        mapper_options=options['mapper']
+        mapper_options=mapper_opts,
     )
     logger.info("Sparse reconstruction completed.")
 
@@ -67,7 +96,7 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
     logger.info("Running patch match stereo...")
     pycolmap.patch_match_stereo(
         workspace_path=dense_dir,
-        options=options['mvs']
+        options=mvs_opts,
     )
     logger.info("Patch match stereo completed.")
 
