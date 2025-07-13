@@ -8,12 +8,19 @@ from sfm_pipeline import run_structure_from_motion
 from pointcloud_tools import load_pointcloud, fit_ground_plane, align_pointcloud
 from rasterizer import rasterize_to_2d_map
 from config import CONFIG, COLMAP_OPTIONS, RANSAC_OPTIONS
-from utils import setup_logging, ensure_dir
+from utils import (
+    setup_logging,
+    ensure_dir,
+    download_video,
+    extract_frames,
+)
 
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Lawn Mapper: Generate a top-down map of your lawn from video frames.")
-    parser.add_argument("input_dir", type=Path, help="Directory containing video frames")
+    parser.add_argument("input_dir", type=Path, help="Directory to store or read video frames")
+    parser.add_argument("--video-url", type=str, default=None, help="Direct URL to the input video")
+    parser.add_argument("--frame-step", type=int, default=10, help="Extract every n-th frame when downloading a video")
     parser.add_argument("--output-dir", type=Path, default=Path("output"), help="Output directory for results")
     parser.add_argument("--workspace-dir", type=Path, default=Path("workspace"), help="Workspace directory for temporary files")
     parser.add_argument("--pixels-per-meter", type=float, default=CONFIG['pixels_per_meter'], help="Resolution of the output map in pixels per meter")
@@ -37,7 +44,13 @@ def main():
     # Ensure directories exist
     ensure_dir(args.output_dir)
     ensure_dir(args.workspace_dir)
+    ensure_dir(args.input_dir)
     logger.info("Directories initialized.")
+
+    if args.video_url:
+        video_path = args.workspace_dir / "input_video.mp4"
+        download_video(args.video_url, video_path)
+        extract_frames(video_path, args.input_dir, step=args.frame_step)
     
     # Step 1: Structure from Motion and Multi-View Stereo with COLMAP
     pointcloud_path = args.workspace_dir / "fused.ply"
