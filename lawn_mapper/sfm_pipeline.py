@@ -67,9 +67,14 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
 
     # Step 2: Feature Matching
     logger.info("Matching features between images...")
-    pycolmap.match_features(
+    # pycolmap's API exposes various matching functions depending on the desired
+    # strategy.  The previous implementation attempted to call
+    # `match_features`, however this function was removed in newer versions of
+    # pycolmap.  Exhaustive matching most closely replicates the old behaviour
+    # and requires only the SiftMatchingOptions, so we use it here.
+    pycolmap.match_exhaustive(
         database_path=database_path,
-        sift_matching_options=match_opts,
+        sift_options=match_opts,
     )
     logger.info("Feature matching completed.")
 
