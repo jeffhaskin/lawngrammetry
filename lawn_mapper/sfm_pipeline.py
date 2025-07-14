@@ -101,11 +101,14 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
 
     # Step 4: Dense Reconstruction (MVS)
     logger.info("Performing dense reconstruction (Multi-View Stereo)...")
-    pycolmap.image_undistorter(
-        image_path=image_dir,
-        input_path=sparse_dir / "0",
-        output_path=dense_dir,
-        output_type="COLMAP"
+    # The `image_undistorter` function was removed in newer versions of
+    # `pycolmap`. The equivalent functionality is provided by
+    # `undistort_images`, so we call that here instead.
+    pycolmap.undistort_images(
+        output_path=str(dense_dir),
+        input_path=str(sparse_dir / "0"),
+        image_path=str(image_dir),
+        output_type="COLMAP",
     )
     logger.info("Image undistortion completed.")
 
