@@ -24,6 +24,15 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
 
     # Ensure directories
     database_path = workspace_dir / "database.db"
+    # If a previous run left database artifacts, remove them to avoid
+    # SQLite locking issues.
+    if database_path.exists():
+        logger.info("Removing existing COLMAP database file to start fresh")
+        database_path.unlink()
+    for suffix in ["-wal", "-shm", "-journal"]:
+        tmp = Path(str(database_path) + suffix)
+        if tmp.exists():
+            tmp.unlink()
     image_dir = input_dir
     sparse_dir = workspace_dir / "sparse"
     dense_dir = workspace_dir / "dense"
