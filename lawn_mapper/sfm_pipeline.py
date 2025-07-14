@@ -58,6 +58,8 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
         options.get('mapper', {}),
         pycolmap.IncrementalMapperOptions,
     )
+    pipeline_opts = pycolmap.IncrementalPipelineOptions()
+    pipeline_opts.mapper = mapper_opts
     mvs_opts = _dict_to_options(
         options.get('mvs', {}),
         pycolmap.PatchMatchOptions,
@@ -93,7 +95,7 @@ def run_structure_from_motion(input_dir: Path, workspace_dir: Path, options: dic
         database_path=database_path,
         image_path=image_dir,
         output_path=sparse_dir,
-        mapper_options=mapper_opts,
+        options=pipeline_opts,
     )
     logger.info("Sparse reconstruction completed.")
 
